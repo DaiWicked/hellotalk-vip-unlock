@@ -1,0 +1,34 @@
+# ===== 反编译/中间产物（大、可再生） =====
+out/
+out_*/
+smali_out/
+smali_classes*/
+build/
+classes*.dex
+*.log
+apktool.log
+jadx.log
+build.log
+
+# ===== APK / 二进制（不提交大文件） =====
+*.apk
+!module/HTVIPUnlock.apk
+*.idsig
+*.jks
+*.keystore
+
+# ===== 工具二进制 =====
+tools/*.jar
+tools/jadx/
+tools/smali*
+
+# ===== 系统垃圾 =====
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+tools/*.zip
