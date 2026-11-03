@@ -89,3 +89,39 @@
 - `ConsumptionPromptModel`（y97）：翻译/聊天次数提醒
 - `StealthActivity`：隐身模式（年龄隐身等隐私开关集合）
 - UI 框架：大量 Compose + 自研 KMP 组件（HTNicknameComposeView 等）
+
+## 语聊房 Tab 完整链路（阶段1.1 深挖结果，2026-11-03）
+
+### 判定总链
+```
+登录响应 switch_config
+  └─ gnk/djh: learn_live_tab / live_voice_tab / display_course_tab
+       └─ ijh (LaunchConfigV2缓存+更新, ot6.d0() 取单例)
+            ├─ .b = learnLiveTab    (init: kjk.D().h = KV is_adult, 无关!)
+            ├─ .c = liveVoiceTab
+            └─ .d = displayCourseTab
+                 └─ h1l (MainTabLiveViewModel).v() = parseTabConfig:
+                      switch(learnLiveTab):
+                        ==0 → Learn tab (g1l.d)
+                        ==1 → Live(voice in{0,2})/Voice(voice in{0,1}) + Course(course==1)
+                        ==2 → 同上但 voice 语义互换（待真机日志区分）
+                        ==3 → ShortDrama (shortflixStatus==1)
+                      e9k provider ("live voice api")  → g1l.a = Live 底层列表
+                      m3k provider ("live video api")  → g1l.b = Voice 底层列表
+```
+### e9k/m3k 注册链
+- `ud8`(module id 4) → `d30.m`(module_live_communication) → `kvu.d()` case 11 注册 e9k="live voice api"、case 10 注册 m3k="live video api"
+- `ud8(4)` 在 `h3e`(BaseApplication).onCreate 注册，条件：主进程（`f==2`，进程名去包名后为空）
+- 结论：provider 在主进程**总会注册**，不拦 Tab；真正决定 Tab 的是 `learnLiveTab`/`liveVoiceTab` 服务端下发值
+
+### shouldShowLiveTab（te1 case 11, hrj=LiveTabRegistrar 工具）
+```
+shouldShowLiveTab() = (learnLiveTab != -1) ? true
+                       : (age >= 18 ? true : false)   // 兜底: is_adult>=1(18)或已成年标志
+```
+注册 Tab 名: learnLiveTab==3 → "shortdrama"图标, 否则 "live_tab_name"(voice pag)
+
+### 结论（hook 方案定稿）
+1. **最小 hook**：`ijh` 字段 `c`(liveVoiceTab) 写死为 1 或 2（决定 Voice/Live 哪个显示）+ 字段 `b`(learnLiveTab) 写死为 2（开启语音/直播组）
+   - 但 ijh 的值会被登录响应刷新 → 需 hook `djh` 的 getter（`c()I`=liveVoiceTab, `b()I`=learnLiveTab, `d()I`=displayCourseTab）在解析层改
+2. 服务端数据风险：语聊房列表接口可能按服务端区域下发，Tab 亮了列表可能为空 → 动态验证
