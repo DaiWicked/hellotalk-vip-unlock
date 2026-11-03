@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.coldcoffee.htvip"
-    android:versionCode="1"
-    android:versionName="1.0">
+    android:versionCode="5"
+    android:versionName="1.4">
     <uses-sdk android:minSdkVersion="27" android:targetSdkVersion="34"/>
-    <application android:label="HT VIP Unlock" android:hasCode="true">
+    <application android:label="HT VIP Unlock" android:hasCode="true" android:icon="@android:drawable/ic_menu_manage">
         <meta-data android:name="xposedmodule" android:value="true"/>
-        <meta-data android:name="xposeddescription" android:value="HelloTalk 6.4.40 VIP hook (VipInfoUtils r/u/m/j/h/i)"/>
+        <meta-data android:name="xposeddescription" android:value="HelloTalk 6.4.40 VIP + anti-revoke + voice tab (configurable)"/>
         <meta-data android:name="xposedminversion" android:value="93"/>
         <meta-data android:name="xposedscope" android:resource="@array/xposedscope"/>
+        <activity android:name="com.coldcoffee.htvip.ConfigActivity"
+            android:exported="true"
+            android:label="HT VIP Unlock">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
